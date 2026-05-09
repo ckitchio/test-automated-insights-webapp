@@ -1,63 +1,55 @@
-# Astro Starter Kit: Blog
+# Agentic Blog System
+Live URL at Vercel:
+[LIVE URL PLACEHOLDER]
+## Overview
+This project is an automated, AI-driven blog system built for extreme autonomy. It is designed to be **agent-ready**, allowing an AI agent (such as Claude or Cursor) to clone, install, and execute the full content generation lifecycle with zero human intervention.
+The system focuses on functional utility over aesthetic design, using **Astro** for rapid content routing and the **Vercel AI SDK** for intelligent automation.
+Pages in this blog system include the three required pages: Post List, Post Detail, and Tag-filtered pages.
+Automation is handled via GitHub Actions (see `.github/workflows`).
+## 🚀 Quick Start
 
-```sh
-npm create astro@latest -- --template blog
-```
+To get this project running on a fresh machine:
+1. **Clone & Install:**
+   ```bash
+   git clone <repo-url> && cd <repo-dir> && npm install  
+   ```
+2. **Configure Secrets:**
+Copy the example file and **add your `AI_API_KEY`**:
+   ```bash
+   cp .env.example .env
+   # Open .env and add your OpenRouter key now.  
+   ```
+3. **Run:**
+   ```bash
+   npm run dev # To see the blog
+   npm run gen-post # To generate your first post
+   ```
+## Setup & Environment
+To ensure the "Find & Publish" script functions correctly, you must configure the following keys in your `.env` file:
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+| **Variable**  | **Description**                                 | **Default / Example**          |
+| ------------- | ----------------------------------------------- | ------------------------------ |
+| `AI_PROVIDER` | The model gateway provider                      | `openrouter`                   |
+| `AI_API_KEY`  | Your OpenRouter or Provider API key             | `sk-or-v1-...`                 |
+| `AI_MODEL_ID` | The specific model used for generation          | `openrouter/free`              |
+| `AI_BASE_URL` | **(Optional)** API Endpoint if using OpenRouter | `https://openrouter.ai/api/v1` |
+## Automation Logic
+The system is designed for total autonomy:
+### 1. The Content Engine (`gen-post.mjs`)
+The `npm run gen-post` command executes a script that:
+- **Analyses** existing blog posts to avoid duplication.
+- **Identifies** a trending topic in Digital Assets or AI from the last 48 hours.
+- **Generates** a high-quality blog post **optimised** for British English and Answer Engine Optimisation (AEO).
+- **Saves** the post as a Markdown file in `src/content/blog/`.
+### 2. Scheduled Updates (Vercel Cron)
+The script is configured to run automatically via **Vercel Crons**. This ensures the blog remains updated daily without manual input.
 
-Features:
+## Technical Stack
+- **Framework:** Astro (Static Site Generation).
+- **AI Integration:** Vercel AI SDK with OpenRouter.
+- **Content:** Markdown-based file system with `gray-matter` for frontmatter parsing.
+- **Hosting:** Vercel.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
 
-## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).

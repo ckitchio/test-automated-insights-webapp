@@ -1,0 +1,36 @@
+name: Scheduled Post Generation
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # Runs daily at 09:00 UTC
+  workflow_dispatch: # Allows you to run it manually from the GitHub UI
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run generation script
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+          AI_MODEL_ID: ${{ secrets.AI_MODEL_ID }}
+        run: npm run gen-post
+
+      - name: Commit and push if content changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add src/content/blog/
+          git commit -m "🤖 Auto-publish: New blog post" || echo "No changes to commit"
+          git push

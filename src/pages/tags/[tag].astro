@@ -1,27 +1,59 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+// 1. Generate a page for every unique tag
+export async function getStaticPaths() {
+	const allPosts = await getCollection('blog');
+
+	// Extract all tags, flatten the array, and remove duplicates using a Set
+	const uniqueTags = [...new Set(allPosts.map((post) => post.data.tags || []).flat())];
+
+	// Map through each tag to create the route and pass the matching posts
+	return uniqueTags.map((tag) => {
+		const filteredPosts = allPosts
+			.filter((post) => post.data.tags?.includes(tag))
+			.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+		return {
+			params: { tag },
+			props: { posts: filteredPosts },
+		};
+	});
+}
+
+// 2. Grab the tag name and the filtered posts from the URL and Props
+const { tag } = Astro.params;
+const { posts } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`#${tag} | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
+			/* We reuse the exact same layout from index.astro for consistency */
 			main {
 				width: 960px;
 				max-width: 100%;
 				margin: 0 auto;
 				padding: 2rem 1rem;
+			}
+			.tag-header {
+				margin-bottom: 3rem;
+				padding-bottom: 1rem;
+				border-bottom: 1px solid rgb(var(--gray-light));
+			}
+			.tag-header h1 {
+				margin: 0;
+			}
+			.tag-header span {
+				color: rgb(var(--accent));
 			}
 			ul {
 				display: flex;
@@ -43,6 +75,7 @@ const posts = (await getCollection('blog')).sort(
 			.image-container a {
 				display: block;
 			}
+
 			.image-container img {
 				width: 100%;
 				height: auto;
@@ -62,12 +95,11 @@ const posts = (await getCollection('blog')).sort(
 			.title a {
 				color: rgb(var(--black));
 				text-decoration: none;
-				transition: color 0.2s;
 			}
 			.title a:hover {
 				color: rgb(var(--accent));
 			}
-			.post-tags {
+            .post-tags {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 0.5rem;
@@ -111,6 +143,10 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<section>
+				<div class="tag-header">
+					<h1>Posts tagged with: <span>#{tag}</span></h1>
+				</div>
+
 				<ul>
 					{
 						posts.map((post) => (
@@ -127,7 +163,7 @@ const posts = (await getCollection('blog')).sort(
 									<h2 class="title">
 										<a href={`/blog/${post.id}/`}>{post.data.title}</a>
 									</h2>
-									{post.data.tags && post.data.tags.length > 0 && (
+                                    {post.data.tags && post.data.tags.length > 0 && (
 										<div class="post-tags">
 											{post.data.tags.map((tag) => (
 												<a href={`/tags/${tag}/`} class="tag-label">#{tag}</a>

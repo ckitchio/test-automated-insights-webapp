@@ -16,31 +16,52 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
+				width: 100%;
 				max-width: 100%;
 				margin: 0;
 			}
 			.hero-image {
-				width: 100%;
+				max-width: 720px;
+    			margin: 0 auto;;
 			}
 			.hero-image img {
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				width: 100%;
+				height: auto;
+   				border-radius: 12px;
+   				box-shadow: var(--box-shadow);
 			}
 			.prose {
 				width: 720px;
 				max-width: calc(100% - 2em);
-				margin: auto;
+				margin: 2rem auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
+				text-align: left; 
+			}
+			.prose h2 {
+				font-size: 1.4rem; 
+				margin-top: 2rem;
+				margin-bottom: 0.8rem;
+				color: #111;
+				font-weight: 700;
+   			 }
+
+			.prose h3 {
+				font-size: 1.1rem;
+				margin-top: 1.5rem;
+				color: #444;
+			}
+
+			.prose p {
+				margin-bottom: 1.5rem;
+				line-height: 1.7;
 			}
 			.title {
-				margin-bottom: 1em;
+				margin-bottom: 2em;
 				padding: 1em 0;
 				text-align: center;
-				line-height: 1;
+				line-height: 1.2;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
