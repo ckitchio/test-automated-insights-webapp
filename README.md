@@ -1,6 +1,6 @@
 # Agentic Blog System
 Live URL at Vercel:
-[LIVE URL PLACEHOLDER]
+https://test-automated-insights-webapp-omega.vercel.app/
 ## Overview
 This project is an automated, AI-driven blog system built for extreme autonomy. It is designed to be **agent-ready**, allowing an AI agent (such as Claude or Cursor) to clone, install, and execute the full content generation lifecycle with zero human intervention.
 The system focuses on functional utility over aesthetic design, using **Astro** for rapid content routing and the **Vercel AI SDK** for intelligent automation.
