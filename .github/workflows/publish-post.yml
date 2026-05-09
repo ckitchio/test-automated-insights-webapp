@@ -5,6 +5,9 @@ on:
     - cron: '0 * * * *' # Every hour on the hour
   workflow_dispatch: # Allows you to run it manually from the GitHub UI
 
+permissions:
+  contents: write # Allows the action to push new blog posts to your repo
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -15,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24.x' # Use the latest Node.js version
 
       - name: Install dependencies
         run: npm install
