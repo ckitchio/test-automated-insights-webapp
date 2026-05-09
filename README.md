@@ -11,7 +11,7 @@ Automation is handled via GitHub Actions (see `.github/workflows`).
 To get this project running on a fresh machine:
 1. **Clone & Install:**
    ```bash
-   git clone <repo-url> && cd <repo-dir> && npm install  
+   git clone https://github.com/ckitchio/test-automated-insights-webapp.git && cd test-automated-insights-webapp && npm install  
    ```
 2. **Configure Secrets:**
 Copy the example file and **add your `AI_API_KEY`**:
