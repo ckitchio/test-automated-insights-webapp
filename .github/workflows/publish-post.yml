@@ -2,8 +2,8 @@ name: Scheduled Post Generation
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
-      timezone: "Asia/Macau" # Runs every 5 minutes, adjust as needed
+    - cron: '17 1 * * *' # Runs at 1:17 AM every day
+      timezone: "Asia/Macau"
   workflow_dispatch:
 
 permissions:
