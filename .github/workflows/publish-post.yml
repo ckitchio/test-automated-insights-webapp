@@ -2,7 +2,7 @@ name: Scheduled Post Generation
 
 on:
   schedule:
-    - cron: '0 1 * * *' # Every 9:00 AM Macau time
+    - cron: '*/5 * * * *' # Every 5 minutes
   workflow_dispatch: # Allows you to run it manually from the GitHub UI
 
 permissions:
