@@ -2,8 +2,9 @@ name: Scheduled Post Generation
 
 on:
   schedule:
-    - cron: '*/8 * * * *' # Every 8 minutes
-  workflow_dispatch: # Allows you to run it manually from the GitHub UI
+    - cron: '*/5 * * * *'
+      timezone: "Asia/Macau" # Runs every 5 minutes, adjust as needed
+  workflow_dispatch:
 
 permissions:
   contents: write # Allows the action to push new blog posts to your repo
