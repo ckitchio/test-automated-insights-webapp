@@ -1,40 +1,24 @@
-name: Scheduled Post Generation
+name: Agent Remote Publisher
 
 on:
-  schedule:
-    - cron: '17 1 * * *' # Runs at 1:17 AM every day
-      timezone: "Asia/Macau"
-  workflow_dispatch:
-
-permissions:
-  contents: write # Allows the action to push new blog posts to your repo
+  workflow_dispatch: # Allows remote agents to wake the system
 
 jobs:
-  build-and-publish:
+  prepare-environment:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.x' # Use the latest Node.js version
+          node-version: '24.x'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Run generation script
-        env:
-          AI_API_KEY: ${{ secrets.AI_API_KEY }}
-          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
-          AI_MODEL_ID: ${{ secrets.AI_MODEL_ID }}
-        run: npm run gen-post
-
-      - name: Commit and push if content changed
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add src/content/blog/
-          git commit -m "🤖 Auto-publish: New blog post" || echo "No changes to commit"
-          git push
+      - name: Notify Agent
+        run: echo "Environment ready. Agent may now proceed to generate content and execute npm run publish-post."

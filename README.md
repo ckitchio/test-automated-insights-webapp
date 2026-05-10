@@ -2,75 +2,124 @@
 Live URL at Vercel:
 https://test-automated-insights-webapp-omega.vercel.app/
 ## Overview
-This project is an automated, AI-driven blog system built for extreme autonomy. It is designed to be **agent-ready**, allowing an AI agent (such as Claude or Cursor) to clone, install, and execute the full content generation lifecycle with zero human intervention.
-The system focuses on functional utility over aesthetic design, using **Astro** for rapid content routing and the **Vercel AI SDK** for intelligent automation.
-Pages in this blog system include the three required pages: Post List, Post Detail, and Tag-filtered pages.
-Automation is handled via GitHub Actions (see `.github/workflows`).
-## 🚀 Quick Start
+This project is an automated, schema-validated blog framework built with Astro. It is specifically designed to be used as a "publisher plug-in" for AI agents.
+
+The system handles the infrastructure and data validation, while the  agent is responsible for the the content research, synthesis and generation.
+
+## Quick Start
 
 To get this project running on a fresh machine:
 1. **Clone & Install:**
    ```bash
    git clone https://github.com/ckitchio/test-automated-insights-webapp.git && cd test-automated-insights-webapp && npm install  
    ```
-2. **Configure Secrets:**
-Copy the example environment file and populate it with your provider details.
+2. **Configure Environment:**
+   Create a `.env` file in the root directory. You must provide a GitHub Personal Access Token (PAT) to allow the script to write to the repository.
+
+   - Required Scopes: contents:write (to push posts) and workflows:write (to trigger remote runs).
+
+   - Placement: This token must be mirrored in GitHub Repository Secrets if you intend to use remote triggers. It is NOT required in Vercel.
+
    ```bash
-   cp .env.example .env
-   # Edit .env to include your AI_PROVIDER, AI_API_KEY, and AI_MODEL_ID. 
+   GITHUB_TOKEN=your_github_token_here
    ```
-3. **Run:**
+3. **Run Development Server:**
    ```bash
-   npm run dev # To see the blog
-   npm run gen-post # To generate your first post
+   npm run dev
    ```
-## Setup & Environment
-To ensure the "Find & Publish" script functions correctly, you must configure the following keys. These are provider-agnostic; for now the system supports OpenRouter, OpenAI, Anthropic, and Mistral:
 
-| **Variable**  | **Description**                                 | **Requirement**          |
-| ------------- | ----------------------------------------------- | ------------------------------ |
-| `AI_PROVIDER` | The service you are using (e.g., `openrouter`, `openai`, `anthropic`)                      | Mandatory                   |
-| `AI_API_KEY`  | Your secret API key from the chosen provider             | Mandatory                 |
-| `AI_MODEL_ID` | The specific model ID (e.g., `openrouter/free`, `gpt-4o`)          | Mandatory              |
-| `AI_BASE_URL` | The API endpoint (Optional if using standard providers) | Optional |
-
-## Automation Logic
-The system is designed for total autonomy:
-
-### 1. The Content Engine (`gen-post.mjs`)
-The `npm run gen-post` command executes a script that:
-- **Analyses** existing blog posts to avoid duplication.
-- **Identifies** a trending topic in Digital Assets or AI from the last 48 hours.
-- **Generates** a high-quality blog post **optimised** for Answer Engine Optimisation (AEO).
-- **Saves** the post as a Markdown file in `src/content/blog/`.
-
-### 2. Scheduled Updates (GitHub Actions)
-The system is optimised for continuous delivery via GitHub Actions (see `.github/workflows/publish-post.yml`).
-
-Frequency: Scheduled to run daily at 01:00 UTC (09:00 CST/Macau time).
-
-Manual Trigger: Developers or agents can trigger an immediate generation via the Actions tab using the `workflow_dispatch` event.
-
-Execution: The action executes `gen-post.mjs`, commits the new Markdown file to the repository, and pushes the change.
-
-Deployment: Vercel automatically detects the new commit and redeploys the live site.
-
-## Instructions for AI Agents
-To automate this system on a fresh deployment:
-
-1. Repository Secrets: Navigate to `Settings > Secrets and variables > Actions` and inject the mandatory variables from the Setup & Environment table.
-
-2. Workflow Permissions: Ensure the `GITHUB_TOKEN` is set to "Read and write permissions" under `Settings > Actions > General` to allow the agent to commit and push new content.
-
-4. Manual Execution: If immediate content is required, the agent should locate the `Scheduled Post Generation` workflow and execute `workflow_dispatch`.
+**Sync Local State:**
+   If you are working in a persistent environment, always pull the latest changes before starting a new post to avoid merge conflicts:
+   ```bash
+   git pull origin main
+   ```
 
 
+## The System Contract (Schema)
+To ensure the integrity of the blog, the publishing script (gen-post.mjs) acts as a gatekeeper. Every post must strictly adhere to the following JSON schema:
+
+| Attribute | Type | Requirement | Description |
+| --------- | ---- | ----------- | ----------- |
+| Title | `String` | Mandatory | SEO-optimised title under 60 characters. |
+| description | `String` | Mandatory | Professional 150-character meta-summary. |
+| pubDate | `String` | Mandatory | ISO 8601 format (YYYY-MM-DD). |
+| content | `String` | Mandatory | Full body text in valid Markdown format. |
+| tags | `Array` | Mandatory | 1-3 high-level categories (e.g., "Regulation", "AI"). |
+
+
+Example:
+```bash
+{
+  "title": "SEO-optimised title under 60 characters",
+  "description": "An analytical deep-dive into how liquid staking protocols are evolving to meet 2026 market demands.",
+  "pubDate": "YYYY-MM-DD",
+  "content": "Full body text in valid Markdown format",
+  "tags": ["Tag1", "Tag2"]
+}
+```
+## Agent Instructions (Generation Directives)
+If you are an AI agent tasked with writing for this blog, follow this workflow to achieve the "Definition of Done":
+
+### Step 1. Pre-Writing Context Discovery
+- **Audit Database:** Scan the content of the existing `*.md` files in `src/content/blog/`.
+- **Information Gain:** Identify a REAL trending event in Digital Assets or AI from the last 48 hours not already covered in the audit. 
+- **Persona:** Act as a Senior Industry Analyst using Answer Engine Optimisation (AEO) guidelines.
+
+### Step 2. Content Execution
+- Generate the post content following the Schema.
+
+- **Formatting:** The first paragraph after the first H2 must be a 2-sentence "Featured Snippet".
+
+- **Verification:** Use only credible sources. List these in a "References" section at the end of the post.
+
+- **Tagging Rules**:
+    1. REUSE existing tags where appropriate, but do not force it.
+    2. Do NOT create redundant tags (e.g., if "AI Payments" exists, do not create "Artificial Intelligence Payments").
+    3. FORMATTING: Use "Title Case" for all tags (e.g., "Market Analysis"). 
+    4. ABBREVIATIONS: Always keep industry acronyms in ALL CAPS (e.g., AI, NFT, BTC, DeFi, SEC).
+    5. If you must create a new tag, ensure it is distinct.
+   
+### Step 3. Publishing
+   Run the following command to publish. 
+
+   1. Save your generated JSON to a file named `payload.json`.
+   2. Execute the following command:
+   ```bash
+   npm run publish-post -- --file=payload.json
+   ```
+### Step 4. Verification (Definition of Done)
+1. Check the console for a `✅ Success! Published: [filename].md` message.
+2. Verify the new file exists in `src/content/blog/`.
+3. Confirm the script has executed a successful `git push`.
+
+## Troubleshooting for Agents
+If a command fails, do not attempt to modify the system architecture. Follow these diagnostic steps to identify the root cause:
+1. Identify the Error Type
+   Check the console output for one of the following keywords:
+   - `ZodError` / `Validation Error`: The generated content does not match the System Contract.
+      - Action: Read the specific error path in the console (e.g., `invalid_string` at `title`). Adjust your generation prompt to strictly follow the character limits or date formats defined in the schema.
+   - `Authentication` / `403` / `Permission Denied`: The script cannot talk to the GitHub "database".
+      - Action: Verify that the `GITHUB_TOKEN` in `.env` is present and has the `contents:write` scope enabled.
+   - `Merge Conflict` / `Rejected`: The local repository state is out of sync with the remote.
+      - Action: Execute `git pull origin main` and then re-run the `publish-post` command.
+2. Verify the "Definition of Done"
+   If the script exits with Success, but you cannot see the file:
+   - Check the `src/content/blog/` directory directly.
+   - If the file is there but not on the website, verify that your local changes were actually pushed to the `main` branch.
+
+
+## Remote Triggering
+If the agent is interacting via the GitHub API, the system can be woken up remotely.
+
+- Event: `workflow_dispatch`.
+
+- Action: Triggers the environment to allow the agent to run the publishing sequence.
 
 ## Technical Stack
 - **Framework:** Astro (Static Site Generation).
-- **AI Integration:** Vercel AI SDK with OpenRouter.
-- **Content:** Markdown-based file system with `gray-matter` for frontmatter parsing.
-- **Hosting:** Vercel. 
+- **Database**: Git-based file system (`src/content/blog/`).
+- **Validation**: Zod-backed schema enforcement.
+- **Hosting:** Vercel (Automatic redeployment on push). 
 
 
 
