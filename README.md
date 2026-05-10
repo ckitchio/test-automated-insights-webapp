@@ -70,7 +70,7 @@ To automate this system on a fresh deployment:
 - **Framework:** Astro (Static Site Generation).
 - **AI Integration:** Vercel AI SDK with OpenRouter.
 - **Content:** Markdown-based file system with `gray-matter` for frontmatter parsing.
-- **Hosting:** Vercel.
+- **Hosting:** Vercel. 
 
 
 
