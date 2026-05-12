@@ -8,6 +8,9 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://test-automated-insights-webapp-omega.vercel.app/',
 	integrations: [mdx(), sitemap()],
+	image: {
+		remotePatterns: [{ protocol: 'https' }],
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),

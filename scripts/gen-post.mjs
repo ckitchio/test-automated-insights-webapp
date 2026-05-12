@@ -8,10 +8,11 @@ import { execSync } from 'child_process';
 // 1. Define the System Contract (Schema)
 const PostSchema = z.object({
   title: z.string().max(60, "Title must be under 60 characters"),
-  description: z.string().min(10, "Description is too short").max(160, "Description must be under 160 characters"),
-  pubDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+  description: z.string().min(10, "Description is too short").max(160, "Description must be under 160 characters").optional(),
+  pubDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD").optional(),
   content: z.string().min(10, "Content is too short"),
-  tags: z.array(z.string()).min(1).max(3) 
+  tags: z.array(z.string()).min(1).max(3).optional(),
+  heroImage: z.string().optional()
 });
 
 // Helper to create URL-friendly filenames
@@ -43,13 +44,44 @@ async function run() {
 
     // 3. Validate against Schema
     const validatedData = PostSchema.parse(payload);
-    console.log("✅ Data validated against System Contract.");
 
+    // Fallbacks for missing optional fields (with console warnings)
+    const appliedFallbacks = [];
+
+    const finalData = { ...validatedData };
+
+    if (!finalData.description) {
+      finalData.description = validatedData.content.split('\n')[0].slice(0, 150) + "...";
+      appliedFallbacks.push("description");
+    }
+
+    if (!finalData.pubDate) {
+      finalData.pubDate = new Date().toISOString().split('T')[0];
+      appliedFallbacks.push("pubDate");
+    }
+
+    if (!finalData.tags || finalData.tags.length === 0) {
+      finalData.tags = ["Uncategorized"];
+      appliedFallbacks.push("tags");
+    }
+
+    if (!finalData.heroImage) {
+      finalData.heroImage = `https://picsum.photos/seed/${validatedData.title.length}/1020/510`;
+      appliedFallbacks.push("heroImage");
+    }
+
+    // Log any fallbacks applied
+    if (appliedFallbacks.length > 0) {
+      console.log(`⚠️ Data processed with fallbacks for: [${appliedFallbacks.join(", ")}]`);
+    } else {
+      console.log("✅ Data validated: Agent provided perfect information.");
+    }
+    
     // 4. Format for Astro (Markdown + Frontmatter)
-    const { content, ...frontmatter } = validatedData;
+    const { content, ...frontmatter } = finalData;
     const fileContent = matter.stringify(content, frontmatter);
     
-    const slug = `${validatedData.pubDate}-${slugify(validatedData.title)}`;
+    const slug = `${finalData.pubDate}-${slugify(finalData.title)}`;
     const outputDir = path.join(process.cwd(), 'src', 'content', 'blog');
     const outputFileName = `${slug}.md`;
     const outputPath = path.join(outputDir, outputFileName);
@@ -63,7 +95,7 @@ async function run() {
     if (process.env.GITHUB_TOKEN || process.env.NODE_ENV === 'production') {
       console.log("🚀 Starting Git push...");
       execSync(`git add ${outputPath}`);
-      execSync(`git commit -m "🤖 Agent Update: ${validatedData.title}"`);
+      execSync(`git commit -m "🤖 Agent Update: ${finalData.title}"`);
       execSync(`git push origin main`);
       console.log("🌐 Database synced with GitHub.");
     } else {

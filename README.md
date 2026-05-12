@@ -38,23 +38,24 @@ To get this project running on a fresh machine:
 ## The System Contract (Schema)
 To ensure the integrity of the blog, the publishing script (gen-post.mjs) acts as a gatekeeper. Every post must strictly adhere to the following JSON schema:
 
-| Attribute | Type | Requirement | Description |
-| --------- | ---- | ----------- | ----------- |
-| Title | `String` | Mandatory | SEO-optimised title under 60 characters. |
-| description | `String` | Mandatory | Professional 150-character meta-summary. |
-| pubDate | `String` | Mandatory | ISO 8601 format (YYYY-MM-DD). |
-| content | `String` | Mandatory | Full body text in valid Markdown format. |
-| tags | `Array` | Mandatory | 1-3 high-level categories (e.g., "Regulation", "AI"). |
-
+| Attribute | Type | Requirement | System Fallback (If missing) |
+| :--- | :--- | :--- | :--- |
+| **title** | `String` | **Mandatory** | N/A (Build will fail) |
+| **content** | `String` | **Mandatory** | N/A (Build will fail) |
+| **description** | `String` | *Soft-Mandatory* | First 150 chars of content (Sub-optimal for SEO). |
+| **heroImage** | `URL` | *Soft-Mandatory* | Dynamic high-quality abstract image. |
+| **pubDate** | `String` | *Optional* | Defaults to build execution date. |
+| **tags** | `Array` | *Optional* | Defaults to `["Uncategorized"]`. |
 
 Example:
 ```bash
 {
-  "title": "SEO-optimised title under 60 characters",
-  "description": "An analytical deep-dive into how liquid staking protocols are evolving to meet 2026 market demands.",
-  "pubDate": "YYYY-MM-DD",
-  "content": "Full body text in valid Markdown format",
-  "tags": ["Tag1", "Tag2"]
+  "title": "The Future of AI Agents in DeFi",
+  "description": "An analytical deep-dive into how autonomous agents are reshaping yield optimization in 2026.",
+  "pubDate": "2026-05-12",
+  "heroImage": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0",
+  "content": "## Introduction\nAutonomous agents are...",
+  "tags": ["AI", "DeFi", "Web3"]
 }
 ```
 ## Agent Instructions (Generation Directives)
@@ -78,6 +79,15 @@ If you are an AI agent tasked with writing for this blog, follow this workflow t
     3. FORMATTING: Use "Title Case" for all tags (e.g., "Market Analysis"). 
     4. ABBREVIATIONS: Always keep industry acronyms in ALL CAPS (e.g., AI, NFT, BTC, DeFi, SEC).
     5. If you must create a new tag, ensure it is distinct.
+
+- **Hero Image Strategy for Agents**:
+   To maintain high visual quality without human intervention, follow this priority:
+
+   1. Search: Use your browsing tools to find a relevant, high-resolution public URL (e.g., Unsplash, Pexels).
+
+   2. Dynamic Generation: If no specific image is found, use a themed seed URL: `https://picsum.photos/seed/[topic-keyword]/1020/510`.
+
+   3. Constraint: URLs must be direct links ending in `.jpg`, `.png`, or `.webp`.
    
 ### Step 3. Publishing
    Run the following command to publish. 
@@ -121,6 +131,7 @@ If the agent is interacting via the GitHub API, the system can be woken up remot
 - **Validation**: Zod-backed schema enforcement.
 - **Hosting:** Vercel (Automatic redeployment on push). 
 
-
+## Fallback system:
+The framework automatically applies logical fallbacks for non-core metadata (images, dates, descriptions) to ensure success even with imperfect AI output.
 
 
